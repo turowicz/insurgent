@@ -69,6 +69,7 @@ namespace Insurgent.Common.Managers
                 if (process.ProcessName == "privoxy")
                 {
                     process.Kill();
+                    process.WaitForExit();
                 }
             }
         }
@@ -81,6 +82,7 @@ namespace Insurgent.Common.Managers
                 _proxies.TryDequeue(out proxy);
 
                 proxy?.Process?.Kill();
+                proxy?.Process?.WaitForExit();
             }
         }
 

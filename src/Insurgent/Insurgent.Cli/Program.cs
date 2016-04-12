@@ -18,9 +18,6 @@ namespace Insurgent.Cli
                 using (var am = new AgentManager(count))
                 {
                     am.Kill();
-
-                    Thread.Sleep(1000);
-
                     am.Start();
 
                     Console.WriteLine("Processes running");

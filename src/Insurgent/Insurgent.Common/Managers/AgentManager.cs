@@ -71,6 +71,7 @@ namespace Insurgent.Common.Managers
                 if (process.ProcessName == "tor")
                 {
                     process.Kill();
+                    process.WaitForExit();
                 }
             }
         }
@@ -83,6 +84,7 @@ namespace Insurgent.Common.Managers
                 _agents.TryDequeue(out agent);
 
                 agent?.Process?.Kill();
+                agent?.Process?.WaitForExit();
             }
         }
 

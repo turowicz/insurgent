@@ -13,6 +13,13 @@ namespace Insurgent.Common.Entities
         {
             Id = id;
             Process = process;
+
+            Process.OutputDataReceived += Process_OutputDataReceived;
+        }
+
+        private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

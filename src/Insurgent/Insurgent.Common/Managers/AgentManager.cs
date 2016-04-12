@@ -58,7 +58,19 @@ namespace Insurgent.Common.Managers
 
                 File.WriteAllText(configPath, command.ToString());
 
-                var agent = new Agent(id, Process.Start($"{torPath}", $"--defaults-torrc {configPath}"));
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = $"{torPath}",
+                        Arguments = $"--defaults-torrc {configPath}",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true
+                    }
+                };
+                process.Start();
+                var agent = new Agent(id, process);
 
                 _agents.Enqueue(agent);
             }

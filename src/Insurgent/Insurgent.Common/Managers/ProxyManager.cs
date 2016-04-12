@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Insurgent.Common.Entities;
 
 namespace Insurgent.Common.Managers
@@ -56,7 +55,19 @@ namespace Insurgent.Common.Managers
 
                 File.WriteAllText(configPath, config);
 
-                var proxy = new Proxy(id, Process.Start($"{proxyPath}", Path.Combine(_path, $"config.{id}.txt")));
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = $"{proxyPath}",
+                        Arguments = Path.Combine(_path, $"config.{id}.txt"),
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true
+                    }
+                };
+                process.Start();
+                var proxy = new Proxy(id, process);
 
                 _proxies.Enqueue(proxy);
             }

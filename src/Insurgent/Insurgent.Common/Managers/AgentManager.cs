@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Insurgent.Common.Entities;
@@ -35,7 +32,7 @@ namespace Insurgent.Common.Managers
             var port = 9051;
             var torPath = Path.Combine(_path, "Tor", "tor.exe");
 
-            foreach (var id in Enumerable.Range(1, _count))
+            foreach (var id in Enumerable.Range(0, _count - 1))
             {
                 var configPath = Path.Combine(_path, $"{id}.config");
                 var dataPath = Path.Combine(_path, "Sessions", id.ToString());
@@ -66,7 +63,7 @@ namespace Insurgent.Common.Managers
                         Arguments = $"--defaults-torrc {configPath}",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
-                        CreateNoWindow = true
+                        CreateNoWindow = true,
                     }
                 };
                 process.Start();
@@ -74,6 +71,11 @@ namespace Insurgent.Common.Managers
 
                 _agents.Enqueue(agent);
             }
+        }
+
+        public Boolean Ready()
+        {
+            return _agents.All(x => x.Progress == 100);
         }
 
         public void Kill()
@@ -105,21 +107,9 @@ namespace Insurgent.Common.Managers
             Stop();
         }
 
-        public async Task<List<String>> Despatch(Uri url)
+        public Task Despatch(Func<Agent, Task> action)
         {
-            var port = 8118;
-
-            var results = await Task.WhenAll(_agents.Select((agent, i) => Get(port + i, agent, url)));
-
-            return results.ToList();
-        }
-
-        private async Task<string> Get(int port, Agent agent, Uri url)
-        {
-            using (var http = new HttpClient(new HttpClientHandler() { Proxy = new WebProxy($"127.0.0.1:{port}"), UseProxy = true }))
-            {
-                return await http.GetStringAsync(url);
-            }
+            return Task.WhenAll(_agents.Select(action));
         }
     }
 }

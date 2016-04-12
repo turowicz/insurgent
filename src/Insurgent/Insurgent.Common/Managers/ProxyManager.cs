@@ -32,7 +32,7 @@ namespace Insurgent.Common.Managers
             var proxyPath = Path.Combine(_path, "Privoxy", "privoxy.exe");
             var template = File.ReadAllText(Path.Combine(_path, "config.templ.txt"));
 
-            foreach (var id in Enumerable.Range(1, _count))
+            foreach (var id in Enumerable.Range(0, _count - 1))
             {
                 var configPath = Path.Combine(_path, $"config.{id}.txt");
                 var dataPath = Path.Combine(_path, "Sessions", id.ToString());

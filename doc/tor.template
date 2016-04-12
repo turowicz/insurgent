@@ -1,0 +1,2 @@
+SocksPort @@SOCKS@@
+DataDirectory @@DATA@@

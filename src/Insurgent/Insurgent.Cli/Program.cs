@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Insurgent.Common.Managers;
 
 namespace Insurgent.Cli
@@ -11,10 +12,15 @@ namespace Insurgent.Cli
 
             using (var pm = new ProxyManager(count))
             {
+                pm.Kill();
                 pm.Start();
                 
                 using (var am = new AgentManager(count))
                 {
+                    am.Kill();
+
+                    Thread.Sleep(1000);
+
                     am.Start();
 
                     Console.WriteLine("Processes running");

@@ -21,8 +21,6 @@ namespace Insurgent.Common.Managers
             _path = Environment.GetEnvironmentVariable("INSURGENTPRIVOXY");
         }
 
-
-
         public void Start()
         {
             if (_path == null || !Directory.Exists(_path ?? string.Empty))
@@ -61,6 +59,17 @@ namespace Insurgent.Common.Managers
                 var proxy = new Proxy(id, Process.Start($"{proxyPath}", Path.Combine(_path, $"config.{id}.txt")));
 
                 _proxies.Enqueue(proxy);
+            }
+        }
+
+        public void Kill()
+        {
+            foreach (var process in Process.GetProcessesByName("privoxy"))
+            {
+                if (process.ProcessName == "privoxy")
+                {
+                    process.Kill();
+                }
             }
         }
 

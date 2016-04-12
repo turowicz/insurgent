@@ -64,6 +64,17 @@ namespace Insurgent.Common.Managers
             }
         }
 
+        public void Kill()
+        {
+            foreach (var process in Process.GetProcessesByName("tor"))
+            {
+                if (process.ProcessName == "tor")
+                {
+                    process.Kill();
+                }
+            }
+        }
+
         public void Stop()
         {
             while (_agents.Any())
@@ -83,17 +94,18 @@ namespace Insurgent.Common.Managers
         public async Task<List<String>> Despatch(Uri url)
         {
             var port = 8118;
-            var result = new List<String>();
 
-            foreach (var agent in _agents)
+            var results = await Task.WhenAll(_agents.Select((agent, i) => Get(port + i, agent, url)));
+
+            return results.ToList();
+        }
+
+        private async Task<string> Get(int port, Agent agent, Uri url)
+        {
+            using (var http = new HttpClient(new HttpClientHandler() { Proxy = new WebProxy($"127.0.0.1:{port}"), UseProxy = true }))
             {
-                using (var http = new HttpClient(new HttpClientHandler() { Proxy = new WebProxy($"127.0.0.1:{port++}"), UseProxy = true }))
-                {
-                    result.Add(await http.GetStringAsync(url));
-                }
+                return await http.GetStringAsync(url);
             }
-
-            return result;
         }
     }
 }

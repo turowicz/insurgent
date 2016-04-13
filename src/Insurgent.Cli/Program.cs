@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Insurgent.Common.Entities;
 using Insurgent.Common.Managers;
+using Jil;
 
 namespace Insurgent.Cli
 {
@@ -12,8 +13,8 @@ namespace Insurgent.Cli
     {
         static void Main(string[] args)
         {
-            var count = 30;
-            var uri = new Uri("https://api.ipify.org?format=json", UriKind.Absolute);
+            var count = 3;
+            var uri = new Uri("http://ip-api.com/json", UriKind.Absolute);
 
             using (var pm = new ProxyManager(count))
             {
@@ -34,9 +35,10 @@ namespace Insurgent.Cli
 
                     var task = am.Despatch(async agent =>
                     {
-                        var result = await Get(agent, uri);
+                        var response = await Get(agent, uri);
+                        var result = JSON.DeserializeDynamic(response);
 
-                        Console.WriteLine(result);
+                        Console.WriteLine($"I'm in {result.country} at {result.query}");
                     });
 
                     task.Wait(TimeSpan.FromMinutes(5));

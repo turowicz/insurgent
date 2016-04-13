@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,12 +15,14 @@ namespace Insurgent.Common.Entities
 
         public Int32 Progress { get; set; }
 
+        public StringBuilder Logger { get; set; }
+
         public Agent(Int32 id, Process process)
         {
             Id = id;
             Process = process;
             Progress = 0;
-
+            Logger = new StringBuilder();
             Task.Run(() => Intercept());
         }
 
@@ -28,12 +31,13 @@ namespace Insurgent.Common.Entities
             var lineRx = new Regex(@"(Bootstrapped [0-9]*%)");
             var valueRx = new Regex(@"\d+");
 
-            while (!Process.HasExited || Progress != 100)
+            while (!Process.HasExited)
             {
                 var line = Process.StandardOutput.ReadLine();
 
                 if (!String.IsNullOrWhiteSpace(line))
                 {
+                    Logger.AppendLine(line);
 
                     var lineMatches = lineRx.Matches(line);
 

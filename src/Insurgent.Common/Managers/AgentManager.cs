@@ -13,11 +13,13 @@ namespace Insurgent.Common.Managers
     {
         private readonly string _path;
         private readonly int _count;
+        private readonly string _country;
         private readonly ConcurrentQueue<Agent> _agents;
 
-        public AgentManager(int count)
+        public AgentManager(int count, string country = null)
         {
             _count = count;
+            _country = country;
             _agents = new ConcurrentQueue<Agent>();
             _path = Environment.GetEnvironmentVariable("INSURGENTTOR");
         }
@@ -40,6 +42,11 @@ namespace Insurgent.Common.Managers
                 var command = new StringBuilder();
                 command.AppendLine($"SocksPort {port++}");
                 command.AppendLine($"DataDirectory {dataPath}");
+
+                if (!String.IsNullOrWhiteSpace(_country))
+                {
+                    command.AppendLine($"ExitNodes {{{_country}}}");
+                }
 
                 if (Directory.Exists(dataPath))
                 {
